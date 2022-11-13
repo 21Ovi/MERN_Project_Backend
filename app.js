@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./models/user.model");
+const Complaint = require("./models/complaints.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -84,6 +85,31 @@ app.post("/api/quote", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({ status: "error", error: "invalid token" });
+  }
+});
+
+app.post("/api/newComplaint", async (req, res) => {
+  console.log(req.body);
+  try {
+    await Complaint.create({
+      name: req.body.name,
+      email: req.body.email,
+      complaintType: req.body.complaintType,
+      address: req.body.address,
+      mobileNumber: req.body.mobileNumber,
+    });
+    res.json({ status: "ok" });
+  } catch (err) {
+    res.json({ status: "error", error: "Duplicate email" });
+  }
+});
+
+app.get("/api/complaints", async (req, res) => {
+  try {
+    const ComplaitData = await Complaint.find({});
+    res.send({ data: ComplaitData });
+  } catch (error) {
+    console.log("Error", error);
   }
 });
 
